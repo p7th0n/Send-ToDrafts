@@ -44,6 +44,7 @@ function Send-DosToDrafts {
         if ($pscmdlet.ShouldProcess("Target", "Operation")) {
             $randomFilename = [System.IO.Path]::GetRandomFileName()
             $draftFile = "~\Dropbox\drafts\" + $randomFilename
+            # $Args combine to make the command to be wrapped and executed
             $cmd = $Args -join " "
             $d2u = "dos2unix " + $draftFile
 
