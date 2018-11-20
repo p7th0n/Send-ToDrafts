@@ -15,3 +15,9 @@ ForEach ($folder in $functionFolders)
 }
 $publicFunctions = (Get-ChildItem -Path "$PSScriptRoot\Public" -Filter '*.ps1').BaseName
 Export-ModuleMember -Function $publicFunctions
+
+# define variables
+
+$draftsFolder = "~\Dropbox\drafts\"
+
+Export-ModuleMember -Variable $draftsFolder

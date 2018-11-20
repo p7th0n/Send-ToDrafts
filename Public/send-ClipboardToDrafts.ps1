@@ -23,19 +23,6 @@ function Send-ClipboardToDrafts {
     [Alias()]
     [OutputType([String])]
     Param (
-        # Param1 help description
-        [Parameter(Mandatory = $true,
-            Position = 0,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            ValueFromRemainingArguments = $false, 
-            ParameterSetName = 'Parameter Set 1')]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [ValidateCount(0, 5)]
-        [ValidateSet("sun", "moon", "earth")]
-        [Alias("p1")] 
-        $Param1
     )
     
     begin {
@@ -44,13 +31,12 @@ function Send-ClipboardToDrafts {
     process {
         if ($pscmdlet.ShouldProcess("Target", "Operation")) {
             $randomFilename = [System.IO.Path]::GetRandomFileName()
-            $draftFile = "~\Dropbox\drafts\" + $randomFilename
-            $d2u = "dos2unix " + $draftFile
-            # $cmd = $Args -join " "
+            $draftFile = $draftsFolder + $randomFilename
 
-            Write-Host '# clipboard:`n ' Get-Clipboard "`n"
-            Get-Clipboard *> $draftFile
-            Invoke-Expression $d2u           
+            Write-Host "# clipboard:`n" 
+            Get-Clipboard | Out-String
+            $content = Get-Clipboard | Out-String
+            $content -replace "`r`n", "`n" | set-content -path $draftFile -Encoding UTF8 -NoNewline
         }
     }
     
