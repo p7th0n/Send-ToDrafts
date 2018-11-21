@@ -36,7 +36,7 @@ function Send-ClipboardToDrafts {
             Write-Host "# clipboard:`n" 
             Get-Clipboard | Out-String
             $content = Get-Clipboard | Out-String
-            $content -replace "`r`n", "`n" | set-content -path $draftFile -Encoding UTF8 -NoNewline
+            $content -replace "`r`n", "`n" | Set-Content -path $draftFile -Encoding UTF8 -NoNewline
         }
     }
     
