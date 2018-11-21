@@ -28,41 +28,59 @@ function Send-DosToDrafts {
         # Valid CMD or PowerShell commands
         [Parameter(Mandatory = $true,
             Position = 0,
-            ValueFromPipeline = $false,
+            ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false, 
+            ValueFromRemainingArguments = $true, 
             ParameterSetName = 'Parameter Set 1')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        $Param1
+        $wrappedCommand
     )
     
     begin {
+        $isPipelined = ($MyInvocation.PipelinePosition -gt 1)
+        if ($isPipelined) {
+            # handle piped command
+            $cmd = $MyInvocation.Line.Substring(0, $MyInvocation.Line.LastIndexOf("|"))
+            $result = Invoke-Expression $cmd
+        }
+        else {
+            # handle command line arguments
+            $cmd = $MyInvocation.Line.Substring($MyInvocation.Line.IndexOf(" ")).Trim()
+            $result = Invoke-Expression $cmd
+        }
     }
     
     process {
-        if ($pscmdlet.ShouldProcess("Target", "Operation")) {
-            $randomFilename = [System.IO.Path]::GetRandomFileName()
-            $draftFile = "~\Dropbox\drafts\" + $randomFilename
-            # $Args combine to make the command to be wrapped and executed
-            $cmd = $Args -join " "
-            $d2u = "dos2unix " + $draftFile
-
-            Write-Host '# command: ' $cmd "`n"
-            Write-Host '# command: ' $cmd "`n" *> $draftFile
-            Invoke-Expression $cmd
-            Invoke-Expression $cmd *>> $draftFile
-            do {
-                try {
-                    Invoke-Expression $d2u
-                }
-                catch {
-                    # error
-                } 
-            } until ($error.Count -eq 0)           
+        if ($isPipelined) {
+            # handle piped command
+        } else {
+            # handle command line arguments
         }
     }
     
     end {
+        $randomFilename = [System.IO.Path]::GetRandomFileName()
+        $draftFile = $draftsFolder + $randomFilename
+        $result *> $draftFile
+
+        $content = Get-Content -raw -path $draftFile
+        if ((($content.trim()).Length -eq 0) -or ($content[0..14] -eq "System.Object[]")) {
+            $content = $result | Out-String
+        }
+        do {
+            $error.Clear()
+            try {
+                # Write-Host "  #### writing content"
+                $content -replace "`r`n", "`n" | set-content -path $draftFile -Encoding UTF8 -NoNewline
+            }
+            catch {
+                # Write-Host "    **** Error: " $_.Exception.Message
+            } 
+            finally {
+                # Write-Host "    **** error: " $error.Count
+            }
+            Start-Sleep -s 1
+        } until ($error.Count -eq 0)
     }
 }
