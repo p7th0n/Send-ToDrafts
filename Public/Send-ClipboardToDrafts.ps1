@@ -2,7 +2,7 @@
 .SYNOPSIS
    Send clipboard to Drafts app. 
 .DESCRIPTION
-    Long description
+    Copy text to clipboard & run Send-ClipboardToDrafts
 .EXAMPLE
     Copy text to clipboard & run Send-ClipboardToDrafts 
 .INPUTS
