@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Send to [Drafts](https://getdrafts.com/) app. Drafts is an iOS app.
+* Send text from Windows to [Drafts](https://getdrafts.com/) app. Drafts is an iOS app.
 
 > Drafts. Where Text Starts.
 >
